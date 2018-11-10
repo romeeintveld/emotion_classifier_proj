@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emotion Classifier</title>
+</head>
+<body>
+    <div style="width:100%; padding: 20px; overflow-y: scroll;">
+    <div id="messages"></div>
+    <div id="message_inp" style="padding-top: 20px;">
+        <form onsubmit="return sendMessage()">
+            <h1>Type here the path to your picture (for example: angry.jpeg):</h1>
+            <input id="message" type="text" style="width: 70%;"><button style="width: 25%">Send</button>
+        </form>
+    </div>
+   
+    <script>
+    var ws = new WebSocket("ws://localhost:8989/websocket");
+    var username = prompt("Type 'predict' to predict an emotion");
+    // var cur_img = ""
+ 
+    function sendMessage() {
+        var messageInput = document.getElementById("message");
+        var message = messageInput.value;
+        var payload = {
+            "type": username,
+            "path": message
+        }
+        // Make the request to the WebSocket.
+        ws.send(JSON.stringify(payload));
+        // cur_img = message;
+        // Clear the message from the input.
+        messageInput.value = "";
+        return false;
+    }
+ 
+    ws.onmessage = function(evt) {
+        // var messageDict = JSON.parse(evt.data);
+        // Create a div with the format `user: message`.
+        var messageBox = document.createElement("div");
+        // var messageIMG = document.createElement("img");
+        // messageIMG.src = cur_img
+        // messageBox.innerHTML = messageDict.user + ": " + messageDict.message;
+        messageBox.innerHTML = evt.data;
+        console.log(evt.data)
+        document.getElementById("messages").appendChild(messageBox);
+        // document.getElementById("message_inp").appendChild(messageIMG);
+    };
+    </script>
+</body>
+</html>
